@@ -80,7 +80,7 @@ ADMIN_COMMANDS=true
 
 # Optional: Enable role/server removal check (set to True)
 EXPIRES=true
-CHECK_INTERVAL=60
+CHECK_INTERVAL=interval_in_seconds
 GUILD_ID=guild_id_to_check
 
 # Optional: Comma-separated role IDs allowed to manage Minecraft usernames
