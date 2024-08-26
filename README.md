@@ -114,7 +114,11 @@ LOGS_CHANNEL=logs_channel_id
 
 4. **Open RCON Port** for Bot Communication:
    ```bash
+   # Linux
    sudo ufw allow 25575/tcp
+   
+   # Windows
+   netsh advfirewall firewall add rule name="Allow RCON Port" dir=in action=allow protocol=TCP localport=25575
    ```
 
 5. **Configure the `.env` file** with your bot token, Minecraft server credentials, and other optional settings.
