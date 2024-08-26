@@ -2,6 +2,9 @@
 
 A Discord bot to integrate Minecraft server functionality, allowing users to link their Discord accounts with Minecraft and enabling administrators to manage players via Discord commands.
 
+<img height="150" src="https://github.com/user-attachments/assets/8c634d17-7c53-4342-9439-558f771cc920" alt="/minecraft command example">
+<img height="150" src="https://github.com/user-attachments/assets/9eb0359f-d7b1-466b-8f5e-932581e0e057" alt="/admin ban command example">
+
 ## Features
 
 - Link your Discord account with a Minecraft server via a `/minecraft` command.
