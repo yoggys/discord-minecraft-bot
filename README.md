@@ -106,7 +106,7 @@ LOGS_CHANNEL=logs_channel_id
 3. **Configure the `server.properties` file** within your Minecraft server directory to enable RCON access:
    ```properties
    # Enable RCON and set its properties
-   rcon.port=25575                    # Set the RCON port (default: 25575)
+   rcon.port=25575                     # Set the RCON port (default: 25575)
    broadcast-rcon-to-ops=true          # Allow broadcasting RCON messages to ops
    enable-rcon=true                    # Enable RCON functionality
    rcon.password=your_password         # Set a strong password for RCON
