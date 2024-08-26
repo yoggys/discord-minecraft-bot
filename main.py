@@ -208,7 +208,7 @@ if config.expires and config.guild is not None:
                             )
                         except Exception as e:
                             error(f"Error in expire check: {e}")
-            await sleep(60)
+            await sleep(config.check_interval)
 
     @client.listen("on_ready", once=True)
     async def on_ready() -> None:
