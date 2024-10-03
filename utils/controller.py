@@ -2,6 +2,7 @@ from logging import error
 from typing import Any, Optional, Union
 
 from discord import ApplicationContext, Bot, Color, Embed, HTTPException, User
+from tortoise.queryset import Q
 
 from utils.config import Config
 from utils.minecraft import MinecraftController
@@ -50,6 +51,11 @@ class Controller:
         await ctx.respond(embed=embed)
 
     async def whitelist_add(self, ctx: ApplicationContext, username: str) -> Any:
+        if await Connection.exists(~Q(user_id=ctx.author.id) & Q(username=username)):
+            return await ctx.respond(
+                "❌ Your username is already taken, please contact admin."
+            )
+
         if connection := await Connection.get_or_none(user_id=ctx.author.id):
             if connection.is_banned:
                 return await ctx.respond("❌ You're banned from the server.")
