@@ -2,8 +2,9 @@ from asyncio import Future, ensure_future, get_event_loop, sleep
 from logging import INFO, basicConfig, error
 from typing import Any, Optional
 
-from discord import (ApplicationContext, Bot, Intents, Permissions, User,
-                     default_permissions, guild_only, option)
+from discord import (ApplicationContext, Bot, IntegrationType, Intents,
+                     InteractionContextType, Permissions, User,
+                     default_permissions, option)
 from tortoise import Tortoise, connections
 from tortoise.queryset import Q
 
@@ -23,14 +24,17 @@ intents = Intents.default()
 if config.expires:
     intents.members = True
 
-client = Bot(intents=intents)
+client = Bot(
+    intents=intents,
+    default_command_context={InteractionContextType.guild},
+    default_command_integration_types={IntegrationType.guild_install},
+)
 controller = Controller(client, config)
 
 admin_group = client.create_group(
     "admin",
     "Admin commands for the Minecraft server.",
     default_member_permissions=Permissions(administrator=True),
-    guild_only=True,
 )
 
 
@@ -143,7 +147,6 @@ async def unban(
     required=False,
 )
 @default_permissions(administrator=True)
-@guild_only()
 async def remove(
     ctx: ApplicationContext,
     user: Optional[User],
@@ -178,7 +181,6 @@ if config.admin_commands:
         type=str,
     )
     @default_permissions(administrator=True)
-    @guild_only()
     async def root(ctx: ApplicationContext, command: str) -> Any:
         await ctx.defer(ephemeral=True)
         await controller.command(ctx, command)
