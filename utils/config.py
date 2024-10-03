@@ -37,7 +37,7 @@ class Config:
         self.check_interval: int = 60
         self.guild: Optional[int] = None
 
-        if expires:
+        if self.expires:
             if check_interval := getenv("CHECK_INTERVAL"):
                 if not check_interval.isdigit():
                     raise ValueError("Invalid CHECK_INTERVAL")
