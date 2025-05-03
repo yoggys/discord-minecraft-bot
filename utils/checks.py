@@ -14,7 +14,7 @@ async def check_allowed(ctx: ApplicationContext, config: Config) -> Any:
         )
 
 
-async def check_admin(
+async def check_arguments(
     ctx: ApplicationContext, user: Optional[User], username: Optional[str]
 ) -> Any:
     if not user and not username:

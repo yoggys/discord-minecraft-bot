@@ -8,7 +8,7 @@ from discord import (ApplicationContext, Bot, IntegrationType, Intents,
 from tortoise import Tortoise, connections
 from tortoise.queryset import Q
 
-from utils.checks import check_admin, check_allowed
+from utils.checks import check_allowed, check_arguments
 from utils.config import Config
 from utils.controller import Controller
 from utils.models import Connection
@@ -22,7 +22,7 @@ config = Config()
 
 intents = Intents.default()
 if config.expires:
-    intents.members = True
+    intents |= Intents.members()
 
 client = Bot(
     intents=intents,
@@ -73,7 +73,7 @@ async def minecraft(ctx: ApplicationContext, username: Optional[str]) -> Any:
 async def check(
     ctx: ApplicationContext, user: Optional[User], username: Optional[str]
 ) -> Any:
-    if await check_admin(ctx, user, username):
+    if await check_arguments(ctx, user, username):
         return
 
     await ctx.defer(ephemeral=True)
@@ -102,7 +102,7 @@ async def ban(
     username: Optional[str],
     reason: Optional[str],
 ) -> Any:
-    if await check_admin(ctx, user, username):
+    if await check_arguments(ctx, user, username):
         return
 
     await ctx.defer(ephemeral=True)
@@ -123,7 +123,7 @@ async def unban(
     user: Optional[User],
     username: Optional[str],
 ) -> Any:
-    if await check_admin(ctx, user, username):
+    if await check_arguments(ctx, user, username):
         return
 
     await ctx.defer(ephemeral=True)
@@ -146,14 +146,13 @@ async def unban(
     type=str,
     required=False,
 )
-@default_permissions(administrator=True)
 async def remove(
     ctx: ApplicationContext,
     user: Optional[User],
     username: Optional[str],
     reason: Optional[str],
 ) -> Any:
-    if await check_admin(ctx, user, username):
+    if await check_arguments(ctx, user, username):
         return
 
     await ctx.defer(ephemeral=True)
@@ -208,8 +207,8 @@ if config.expires and config.guild is not None:
                                 connection.username,
                                 "Membership has expired. Access has been revoked.",
                             )
-                        except Exception as e:
-                            error(f"Error in expire check: {e}")
+                        except Exception as err:
+                            error(f"Error in expire check: {err}")
             await sleep(config.check_interval)
 
     @client.listen("on_ready", once=True)

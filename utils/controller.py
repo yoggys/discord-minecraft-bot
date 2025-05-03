@@ -23,11 +23,16 @@ class Controller:
         await self._mc_controller.connect()
 
     async def close(self) -> None:
-        if not self._mc_controller.is_closed:
-            await self._mc_controller.close()
+        await self._mc_controller.close()
 
-    def get_avatar(self, username: str) -> str:
+    @staticmethod
+    def get_avatar(username: str) -> str:
         return f"https://mineskin.eu/armor/body/{username}/100.png"
+
+    @staticmethod
+    async def get_user(user: Union[User, str]) -> Optional[Connection]:
+        filters = {"username": user} if isinstance(user, str) else {"user_id": user.id}
+        return await Connection.get_or_none(**filters)
 
     async def log_action(self, ctx: Optional[ApplicationContext], embed: Embed) -> None:
         if logs_channel := self.config.logs_channel:
@@ -41,7 +46,7 @@ class Controller:
                     error(f"Failed to send log message to {logs_channel}.")
 
     async def command(self, ctx: ApplicationContext, command: str) -> Any:
-        result = await self._mc_controller.command(command, True)
+        result = await self._mc_controller.command(command)
         embed = Embed(title="Command executed")
         embed.add_field(name="Input", value=f"``` {command} ```")
         embed.add_field(name="Output", value=f"``` {result[:1016]} ```")
@@ -99,9 +104,7 @@ class Controller:
         user: Union[User, str],
         reason: Optional[str] = None,
     ) -> Any:
-        filters = {"username": user} if isinstance(user, str) else {"user_id": user.id}
-        connection = await Connection.get_or_none(**filters)
-
+        connection = await self.get_user(user)
         if not isinstance(user, str) and (not connection or not connection.username):
             if ctx:
                 await ctx.respond("❌ User not found!")
@@ -125,9 +128,7 @@ class Controller:
             await ctx.respond(embed=embed)
 
     async def user_check(self, ctx: ApplicationContext, user: Union[User, str]) -> Any:
-        filters = {"username": user} if isinstance(user, str) else {"user_id": user.id}
-        connection = await Connection.get_or_none(**filters)
-
+        connection = await self.get_user(user)
         if not connection:
             return await ctx.respond("❌ User not found!")
 
@@ -152,9 +153,7 @@ class Controller:
         user: Union[User, str],
         reason: Optional[str] = None,
     ) -> Any:
-        filters = {"username": user} if isinstance(user, str) else {"user_id": user.id}
-        connection = await Connection.get_or_none(**filters)
-
+        connection = await self.get_user(user)
         if not connection:
             if isinstance(user, str):
                 view = ConfirmView(ctx.author)
@@ -201,9 +200,7 @@ class Controller:
         ctx: ApplicationContext,
         user: Union[User, str],
     ) -> Any:
-        filters = {"username": user} if isinstance(user, str) else {"user_id": user.id}
-        connection = await Connection.get_or_none(**filters)
-
+        connection = await self.get_user(user)
         if not connection:
             if isinstance(user, str):
                 view = ConfirmView(ctx.author)

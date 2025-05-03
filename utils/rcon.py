@@ -1,5 +1,5 @@
-from asyncio import (StreamReader, StreamWriter, TimeoutError, open_connection,
-                     wait_for)
+from asyncio import (Lock, StreamReader, StreamWriter, TimeoutError,
+                     open_connection, wait_for)
 from enum import Enum
 from ssl import CERT_NONE, create_default_context
 from struct import pack, unpack
@@ -37,6 +37,7 @@ class Rcon:
         self.timeout: int = timeout
         self.reader: Optional[StreamReader] = None
         self.writer: Optional[StreamWriter] = None
+        self.lock = Lock()
 
     async def connect(self) -> None:
         if self.tls_mode != TLSMode.DISABLED:
@@ -92,4 +93,5 @@ class Rcon:
                 return response
 
     async def command(self, command: str) -> str:
-        return await self._send(RconPacketType.COMMAND, command)
+        async with self.lock:  # RCON connection is SYNC
+            return await self._send(RconPacketType.COMMAND, command)
